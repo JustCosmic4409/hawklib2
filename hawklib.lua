@@ -2674,12 +2674,14 @@ function HawkLib:Window(Win)
 
 					end
 
-					function SectionItems:Dropdown(teks, list, callback)
+					function SectionItems:Dropdown(teks, list, callback, multi)
 						local dropfunc = {}
 						local DropToggled = false
 						local FrameSize = 0
 						local ItemCount = 0
-
+						local SelectedItems = {}
+						multi = multi or false
+					
 						local Dropdown = Instance.new("TextButton")
 						local Title = Instance.new("TextLabel")
 						local DropdownCorner = Instance.new("UICorner")
@@ -2690,7 +2692,7 @@ function HawkLib:Window(Win)
 						local DropdownHolder = Instance.new("ScrollingFrame")
 						local DropdownItemLayout = Instance.new("UIListLayout")
 						local DropdownItemHolder = Instance.new("UIPadding")
-
+					
 						Dropdown.Name = "Dropdown"
 						Dropdown.Parent = Container
 						Dropdown.BackgroundColor3 = HawkLib.Themes[Theme].ItemColors
@@ -2701,7 +2703,7 @@ function HawkLib:Window(Win)
 						Dropdown.Text = ""
 						Dropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
 						Dropdown.TextSize = 15.000
-
+					
 						Title.Name = "Title"
 						Title.Parent = Dropdown
 						Title.BackgroundColor3 = HawkLib.Themes[Theme].ItemColors
@@ -2713,11 +2715,11 @@ function HawkLib:Window(Win)
 						Title.TextColor3 = HawkLib.Themes[Theme].ItemTitleColors
 						Title.TextSize = 15.000
 						Title.TextXAlignment = Enum.TextXAlignment.Left
-
+					
 						DropdownCorner.CornerRadius = UDim.new(0, 6)
 						DropdownCorner.Name = "DropdownCorner"
 						DropdownCorner.Parent = Dropdown
-
+					
 						Arrow.Name = "Arrow"
 						Arrow.Parent = Dropdown
 						Arrow.BackgroundColor3 = HawkLib.Themes[Theme].ItemColors
@@ -2726,7 +2728,7 @@ function HawkLib:Window(Win)
 						Arrow.Size = UDim2.new(0, 26, 0, 27)
 						Arrow.Image = "rbxassetid://6034818372"
 						Arrow.ImageColor3 = HawkLib.Themes[Theme].ItemTitleColors
-
+					
 						DropdownFrame.Name = "DropdownFrame"
 						DropdownFrame.Parent = Container
 						DropdownFrame.BackgroundColor3 = HawkLib.Themes[Theme].ItemColors
@@ -2735,10 +2737,10 @@ function HawkLib:Window(Win)
 						DropdownFrame.Position = UDim2.new(0.334374994, 0, 0.604166687, 0)
 						DropdownFrame.Size = UDim2.new(0, 391, 0, 0)
 						DropdownFrame.Visible = false
-
+					
 						DropdownFrameCorner.Name = "DropdownFrameCorner"
 						DropdownFrameCorner.Parent = DropdownFrame
-
+					
 						DropdownHolder.Name = "DropdownHolder"
 						DropdownHolder.Parent = DropdownFrame
 						DropdownHolder.Active = true
@@ -2750,23 +2752,23 @@ function HawkLib:Window(Win)
 						DropdownHolder.ScrollBarThickness = 3
 						DropdownHolder.CanvasSize = UDim2.new(0, 0, 0, 0)
 						DropdownHolder.ScrollBarImageColor3 = HawkLib.Themes[Theme].TitleBar
-
+					
 						DropdownItemLayout.Name = "DropdownItemLayout"
 						DropdownItemLayout.Parent = DropdownHolder
 						DropdownItemLayout.SortOrder = Enum.SortOrder.LayoutOrder
 						DropdownItemLayout.Padding = UDim.new(0, 5)
-
+					
 						DropdownItemHolder.Name = "DropdownItemHolder"
 						DropdownItemHolder.Parent = DropdownHolder
 						DropdownItemHolder.PaddingBottom = UDim.new(0, 5)
 						DropdownItemHolder.PaddingTop = UDim.new(0, 5)
-
+					
 						TweenService:Create(
 							Page,
 							TweenInfo.new(.2, Enum.EasingStyle.Quad),
 							{CanvasSize = UDim2.new(0, 0, 0, UIListLayout_4.AbsoluteContentSize.Y)}
 						):Play()
-
+					
 						Dropdown.MouseEnter:Connect(
 							function()
 								TweenService:Create(
@@ -2785,7 +2787,7 @@ function HawkLib:Window(Win)
 								):Play()
 							end
 						)
-
+					
 						Dropdown.MouseButton1Down:Connect(
 							function()
 								repeat
@@ -2798,7 +2800,7 @@ function HawkLib:Window(Win)
 								until DropdownFrame.Size == UDim2.new(0, 391, 0, 0)
 							end
 						)
-
+					
 						Dropdown.MouseButton1Click:Connect(
 							function()
 								if DropToggled == false then
@@ -2873,10 +2875,10 @@ function HawkLib:Window(Win)
 								DropToggled = not DropToggled
 							end
 						)
-
+					
 						for i, v in next, list do
 							ItemCount = ItemCount + 1
-
+					
 							if ItemCount == 1 then
 								FrameSize = 39
 							elseif ItemCount == 2 then
@@ -2884,10 +2886,10 @@ function HawkLib:Window(Win)
 							elseif ItemCount >= 3 then
 								FrameSize = 100
 							end
-
+					
 							local Item = Instance.new("TextButton")
 							local ItemCorner = Instance.new("UICorner")
-
+					
 							Item.Name = "Item"
 							Item.Parent = DropdownHolder
 							Item.BackgroundColor3 = HawkLib.Themes[Theme].ItemColors
@@ -2899,10 +2901,10 @@ function HawkLib:Window(Win)
 							Item.TextColor3 = HawkLib.Themes[Theme].ItemTextColors
 							Item.TextSize = 14.000
 							Item.Text = v
-
+					
 							ItemCorner.Name = "ItemCorner"
 							ItemCorner.Parent = Item
-
+					
 							Item.MouseEnter:Connect(
 								function()
 									TweenService:Create(
@@ -2921,143 +2923,23 @@ function HawkLib:Window(Win)
 									):Play()
 								end
 							)
-
+					
 							Item.MouseButton1Click:Connect(
 								function()
-									Title.Text = teks
-									wait()
-									Title.Text = teks .. " - " .. v
-									pcall(callback, v)
-									DropToggled = false
-									DropdownFrame:TweenSize(
-										UDim2.new(0, 391, 0, 0),
-										Enum.EasingDirection.Out,
-										Enum.EasingStyle.Quart,
-										0.1,
-										true
-									)
-									DropdownHolder:TweenSize(
-										UDim2.new(0, 391, 0, 0),
-										Enum.EasingDirection.Out,
-										Enum.EasingStyle.Quart,
-										0.1,
-										true
-									)
-									TweenService:Create(
-										Arrow,
-										TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-										{Rotation = 0}
-									):Play()
-									DropdownFrame.Visible = false
-									TweenService:Create(
-										Page,
-										TweenInfo.new(.2, Enum.EasingStyle.Quad),
-										{CanvasSize = UDim2.new(0, 0, 0, UIListLayout_4.AbsoluteContentSize.Y)}
-									):Play()
-									repeat
-										wait()
-										TweenService:Create(
-											Page,
-											TweenInfo.new(.2, Enum.EasingStyle.Quad),
-											{CanvasSize = UDim2.new(0, 0, 0, UIListLayout_4.AbsoluteContentSize.Y)}
-										):Play()
-									until DropdownFrame.Size == UDim2.new(0, 391, 0, 0)
-								end
-							)
-
-							DropdownHolder.CanvasSize = UDim2.new(0, 0, 0, DropdownItemLayout.AbsoluteContentSize.Y + 15)
-						end
-
-						function dropfunc:Refresh(newlist, boolean)
-							local bolen = boolean
-							--Clearing List
-							Title.Text = teks
-							FrameSize = 0
-							ItemCount = 0
-
-							for i,v in next, DropdownHolder:GetChildren() do
-								if v.Name == "Item" then
-									v:Destroy()
-								end
-							end
-
-							DropdownFrame:TweenSize(
-								UDim2.new(0, 391, 0, 0),
-								Enum.EasingDirection.Out,
-								Enum.EasingStyle.Quart,
-								0.1,
-								true
-							)
-							DropdownHolder:TweenSize(
-								UDim2.new(0, 391, 0, 0),
-								Enum.EasingDirection.Out,
-								Enum.EasingStyle.Quart,
-								0.1,
-								true
-							)
-							TweenService:Create(
-								Arrow,
-								TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-								{Rotation = 0}
-							):Play()
-							repeat
-								wait()
-							until DropdownFrame.Size == UDim2.new(0, 391, 0, 0)
-							DropdownFrame.Visible = false
-							--Adding new listo
-
-							for i, v in next, newlist do
-								ItemCount = ItemCount + 1
-
-								if ItemCount == 1 then
-									FrameSize = 39
-								elseif ItemCount == 2 then
-									FrameSize = 69
-								elseif ItemCount >= 3 then
-									FrameSize = 100
-								end
-
-								local Item = Instance.new("TextButton")
-								local ItemCorner = Instance.new("UICorner")
-
-								Item.Name = "Item"
-								Item.Parent = DropdownHolder
-								Item.BackgroundColor3 = HawkLib.Themes[Theme].ItemColors
-								Item.BackgroundTransparency = 0.2
-								Item.Position = UDim2.new(0, 0, 0.0808080807, 0)
-								Item.Size = UDim2.new(0, 371, 0, 24)
-								Item.AutoButtonColor = false
-								Item.Font = Enum.Font.Gotham
-								Item.TextColor3 = HawkLib.Themes[Theme].ItemTextColors
-								Item.TextSize = 14.000
-								Item.Text = v
-
-								ItemCorner.Name = "ItemCorner"
-								ItemCorner.Parent = Item
-
-								Item.MouseEnter:Connect(
-									function()
-										TweenService:Create(
-											Item,
-											TweenInfo.new(.2, Enum.EasingStyle.Quad),
-											{BackgroundColor3 = HawkLib.Themes[Theme].ButtonHover}
-										):Play()
-									end
-								)
-								Item.MouseLeave:Connect(
-									function()
-										TweenService:Create(
-											Item,
-											TweenInfo.new(.2, Enum.EasingStyle.Quad),
-											{BackgroundColor3 = HawkLib.Themes[Theme].ItemColors}
-										):Play()
-									end
-								)
-
-								Item.MouseButton1Click:Connect(
-									function()
-										Title.Text = teks
-										wait()
+									if multi then
+										if table.find(SelectedItems, v) then
+											for i, item in ipairs(SelectedItems) do
+												if item == v then
+													table.remove(SelectedItems, i)
+													break
+												end
+											end
+										else
+											table.insert(SelectedItems, v)
+										end
+										Title.Text = teks .. " - " .. table.concat(SelectedItems, ", ")
+										pcall(callback, SelectedItems)
+									else
 										Title.Text = teks .. " - " .. v
 										pcall(callback, v)
 										DropToggled = false
@@ -3081,24 +2963,152 @@ function HawkLib:Window(Win)
 											{Rotation = 0}
 										):Play()
 										DropdownFrame.Visible = false
+									end
+									TweenService:Create(
+										Page,
+										TweenInfo.new(.2, Enum.EasingStyle.Quad),
+										{CanvasSize = UDim2.new(0, 0, 0, UIListLayout_4.AbsoluteContentSize.Y)}
+									):Play()
+								end
+							)
+					
+							DropdownHolder.CanvasSize = UDim2.new(0, 0, 0, DropdownItemLayout.AbsoluteContentSize.Y + 15)
+						end
+					
+						function dropfunc:Refresh(newlist, boolean)
+							local bolen = boolean
+							Title.Text = teks
+							FrameSize = 0
+							ItemCount = 0
+					
+							for i,v in next, DropdownHolder:GetChildren() do
+								if v.Name == "Item" then
+									v:Destroy()
+								end
+							end
+					
+							DropdownFrame:TweenSize(
+								UDim2.new(0, 391, 0, 0),
+								Enum.EasingDirection.Out,
+								Enum.EasingStyle.Quart,
+								0.1,
+								true
+							)
+							DropdownHolder:TweenSize(
+								UDim2.new(0, 391, 0, 0),
+								Enum.EasingDirection.Out,
+								Enum.EasingStyle.Quart,
+								0.1,
+								true
+							)
+							TweenService:Create(
+								Arrow,
+								TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+								{Rotation = 0}
+							):Play()
+							repeat
+								wait()
+							until DropdownFrame.Size == UDim2.new(0, 391, 0, 0)
+							DropdownFrame.Visible = false
+					
+							for i, v in next, newlist do
+								ItemCount = ItemCount + 1
+					
+								if ItemCount == 1 then
+									FrameSize = 39
+								elseif ItemCount == 2 then
+									FrameSize = 69
+								elseif ItemCount >= 3 then
+									FrameSize = 100
+								end
+					
+								local Item = Instance.new("TextButton")
+								local ItemCorner = Instance.new("UICorner")
+					
+								Item.Name = "Item"
+								Item.Parent = DropdownHolder
+								Item.BackgroundColor3 = HawkLib.Themes[Theme].ItemColors
+								Item.BackgroundTransparency = 0.2
+								Item.Position = UDim2.new(0, 0, 0.0808080807, 0)
+								Item.Size = UDim2.new(0, 371, 0, 24)
+								Item.AutoButtonColor = false
+								Item.Font = Enum.Font.Gotham
+								Item.TextColor3 = HawkLib.Themes[Theme].ItemTextColors
+								Item.TextSize = 14.000
+								Item.Text = v
+					
+								ItemCorner.Name = "ItemCorner"
+								ItemCorner.Parent = Item
+					
+								Item.MouseEnter:Connect(
+									function()
+										TweenService:Create(
+											Item,
+											TweenInfo.new(.2, Enum.EasingStyle.Quad),
+											{BackgroundColor3 = HawkLib.Themes[Theme].ButtonHover}
+										):Play()
+									end
+								)
+								Item.MouseLeave:Connect(
+									function()
+										TweenService:Create(
+											Item,
+											TweenInfo.new(.2, Enum.EasingStyle.Quad),
+											{BackgroundColor3 = HawkLib.Themes[Theme].ItemColors}
+										):Play()
+									end
+								)
+					
+								Item.MouseButton1Click:Connect(
+									function()
+										if multi then
+											if table.find(SelectedItems, v) then
+												for i, item in ipairs(SelectedItems) do
+													if item == v then
+														table.remove(SelectedItems, i)
+														break
+													end
+												end
+											else
+												table.insert(SelectedItems, v)
+											end
+											Title.Text = teks .. " - " .. table.concat(SelectedItems, ", ")
+											pcall(callback, SelectedItems)
+										else
+											Title.Text = teks .. " - " .. v
+											pcall(callback, v)
+											DropToggled = false
+											DropdownFrame:TweenSize(
+												UDim2.new(0, 391, 0, 0),
+												Enum.EasingDirection.Out,
+												Enum.EasingStyle.Quart,
+												0.1,
+												true
+											)
+											DropdownHolder:TweenSize(
+												UDim2.new(0, 391, 0, 0),
+												Enum.EasingDirection.Out,
+												Enum.EasingStyle.Quart,
+												0.1,
+												true
+											)
+											TweenService:Create(
+												Arrow,
+												TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+												{Rotation = 0}
+											):Play()
+											DropdownFrame.Visible = false
+										end
 										TweenService:Create(
 											Page,
 											TweenInfo.new(.2, Enum.EasingStyle.Quad),
 											{CanvasSize = UDim2.new(0, 0, 0, UIListLayout_4.AbsoluteContentSize.Y)}
 										):Play()
-										repeat
-											wait()
-											TweenService:Create(
-												Page,
-												TweenInfo.new(.2, Enum.EasingStyle.Quad),
-												{CanvasSize = UDim2.new(0, 0, 0, UIListLayout_4.AbsoluteContentSize.Y)}
-											):Play()
-										until DropdownFrame.Size == UDim2.new(0, 391, 0, 0)
 									end
 								)
-
+					
 								DropdownHolder.CanvasSize = UDim2.new(0, 0, 0, DropdownItemLayout.AbsoluteContentSize.Y + 15)
-
+					
 								if bolen ~= nil then
 									if boolean == true then
 										DropdownFrame.Visible = true
@@ -3136,7 +3146,7 @@ function HawkLib:Window(Win)
 										until DropdownFrame.Size == UDim2.new(0, 391, 0, FrameSize)
 									end
 								end
-
+					
 								TweenService:Create(
 									Page,
 									TweenInfo.new(.2, Enum.EasingStyle.Quad),
@@ -3144,18 +3154,19 @@ function HawkLib:Window(Win)
 								):Play()
 							end
 						end
-
+					
 						function dropfunc:Clear()
 							Title.Text = teks
 							FrameSize = 0
 							ItemCount = 0
-
+							SelectedItems = {}
+					
 							for i,v in next, DropdownHolder:GetChildren() do
 								if v.Name == "Item" then
 									v:Destroy()
 								end
 							end
-
+					
 							DropdownFrame:TweenSize(
 								UDim2.new(0, 391, 0, 0),
 								Enum.EasingDirection.Out,
@@ -3180,11 +3191,11 @@ function HawkLib:Window(Win)
 							until DropdownFrame.Size == UDim2.new(0, 391, 0, 0)
 							DropdownFrame.Visible = false
 						end
-
+					
 						function dropfunc:Add(toadd, callback)
 							callback = callback or function() end
 							ItemCount = ItemCount + 1
-
+					
 							if ItemCount == 1 then
 								FrameSize = 39
 							elseif ItemCount == 2 then
@@ -3192,10 +3203,10 @@ function HawkLib:Window(Win)
 							elseif ItemCount >= 3 then
 								FrameSize = 100
 							end
-
+					
 							local Item = Instance.new("TextButton")
 							local ItemCorner = Instance.new("UICorner")
-
+					
 							Item.Name = "Item"
 							Item.Parent = DropdownHolder
 							Item.BackgroundColor3 = HawkLib.Themes[Theme].ItemColors
@@ -3207,10 +3218,10 @@ function HawkLib:Window(Win)
 							Item.TextColor3 = HawkLib.Themes[Theme].ItemTextColors
 							Item.TextSize = 14.000
 							Item.Text = toadd
-
+					
 							ItemCorner.Name = "ItemCorner"
 							ItemCorner.Parent = Item
-
+					
 							Item.MouseEnter:Connect(
 								function()
 									TweenService:Create(
@@ -3229,52 +3240,65 @@ function HawkLib:Window(Win)
 									):Play()
 								end
 							)
-
-
+					
 							Item.MouseButton1Click:Connect(function()
 								pcall(callback)
 							end)
-
+					
 							Item.MouseButton1Click:Connect(
 								function()
-									Title.Text = teks .. " - " .. toadd
-									pcall(callback, toadd)
-									DropToggled = false
-									DropdownFrame:TweenSize(
-										UDim2.new(0, 391, 0, 0),
-										Enum.EasingDirection.Out,
-										Enum.EasingStyle.Quart,
-										0.1,
-										true
-									)
-									DropdownHolder:TweenSize(
-										UDim2.new(0, 391, 0, 0),
-										Enum.EasingDirection.Out,
-										Enum.EasingStyle.Quart,
-										0.1,
-										true
-									)
-									TweenService:Create(
-										Arrow,
-										TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-										{Rotation = 0}
-									):Play()
-									repeat
-										wait()
-									until DropdownFrame.Size == UDim2.new(0, 391, 0, 0)
-									DropdownFrame.Visible = false
-
+									if multi then
+										if table.find(SelectedItems, toadd) then
+											for i, item in ipairs(SelectedItems) do
+												if item == toadd then
+													table.remove(SelectedItems, i)
+													break
+												end
+											end
+										else
+											table.insert(SelectedItems, toadd)
+										end
+										Title.Text = teks .. " - " .. table.concat(SelectedItems, ", ")
+										pcall(callback, SelectedItems)
+									else
+										Title.Text = teks .. " - " .. toadd
+										pcall(callback, toadd)
+										DropToggled = false
+										DropdownFrame:TweenSize(
+											UDim2.new(0, 391, 0, 0),
+											Enum.EasingDirection.Out,
+											Enum.EasingStyle.Quart,
+											0.1,
+											true
+										)
+										DropdownHolder:TweenSize(
+											UDim2.new(0, 391, 0, 0),
+											Enum.EasingDirection.Out,
+											Enum.EasingStyle.Quart,
+											0.1,
+											true
+										)
+										TweenService:Create(
+											Arrow,
+											TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+											{Rotation = 0}
+										):Play()
+										repeat
+											wait()
+										until DropdownFrame.Size == UDim2.new(0, 391, 0, 0)
+										DropdownFrame.Visible = false
+									end
 								end
 							)
-
+					
 							DropdownHolder.CanvasSize = UDim2.new(0, 0, 0, DropdownItemLayout.AbsoluteContentSize.Y + 15)
 						end
-
+					
 						function dropfunc:Remove(toadd)				
 							Title.Text = teks
-							FrameSize = FrameSize-1
-							ItemCount = ItemCount-1
-
+							FrameSize = FrameSize - 1
+							ItemCount = ItemCount - 1
+					
 							if ItemCount == 1 then
 								FrameSize = 39
 							elseif ItemCount == 2 then
@@ -3282,13 +3306,13 @@ function HawkLib:Window(Win)
 							elseif ItemCount >= 3 then
 								FrameSize = 100
 							end
-
+					
 							for i,v in next, DropdownHolder:GetChildren() do
 								if v.Name == "Item" and v.Text == tostring(toadd) then
 									v:Destroy()
 								end
 							end
-
+					
 							DropdownFrame:TweenSize(
 								UDim2.new(0, 391, 0, 0),
 								Enum.EasingDirection.Out,
@@ -3311,10 +3335,25 @@ function HawkLib:Window(Win)
 							repeat
 								wait()
 							until DropdownFrame.Size == UDim2.new(0, 391, 0, 0)
-
+					
 							DropdownHolder.CanvasSize = UDim2.new(0, 0, 0, DropdownItemLayout.AbsoluteContentSize.Y + 15)
 						end
-
+					
+						function dropfunc:SetValue(value)
+							if multi then
+								if type(value) == "table" then
+									SelectedItems = value
+									Title.Text = teks .. " - " .. table.concat(value, ", ")
+									pcall(callback, value)
+								end
+							else
+								if type(value) == "string" then
+									Title.Text = teks .. " - " .. value
+									pcall(callback, value)
+								end
+							end
+						end
+					
 						return dropfunc
 					end
 
