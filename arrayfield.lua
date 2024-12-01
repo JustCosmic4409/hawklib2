@@ -2363,95 +2363,95 @@ function ArrayFieldLibrary:CreateWindow(Settings)
 			AddOptions(DropdownSettings.Options,DropdownSettings.CurrentOption)
 
 			--fix
-            function DropdownSettings:Set(NewOption)
-                if typeof(NewOption) == 'table' then
-                    DropdownSettings.Items.Selected = {}
-                    for _, option in pairs(NewOption) do
-                        if DropdownSettings.Items[option] then
-                            local DropdownOption = DropdownSettings.Items[option]
-                            DropdownOption.Selected = true
-                            table.insert(DropdownSettings.Items.Selected, DropdownOption)
-                            
-                            DropdownOption.Option.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-            
-                            if Dropdown.Visible then
-                                DropdownOption.Option.BackgroundTransparency = 0
-                                DropdownOption.Option.UIStroke.Transparency = 0
-                                DropdownOption.Option.Title.TextTransparency = 0
-                            else
-                                DropdownOption.Option.BackgroundTransparency = 1
-                                DropdownOption.Option.UIStroke.Transparency = 1
-                                DropdownOption.Option.Title.TextTransparency = 1
-                            end
-                        end
-                    end
-                else
-                    DropdownSettings.Items.Selected = {NewOption}
-                    if DropdownSettings.Items[NewOption] then
-                        local DropdownOption = DropdownSettings.Items[NewOption]
-                        DropdownOption.Selected = true
-                        
-                        DropdownOption.Option.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-            
-                        if Dropdown.Visible then
-                            DropdownOption.Option.BackgroundTransparency = 0
-                            DropdownOption.Option.UIStroke.Transparency = 0
-                            DropdownOption.Option.Title.TextTransparency = 0
-                        else
-                            DropdownOption.Option.BackgroundTransparency = 1
-                            DropdownOption.Option.UIStroke.Transparency = 1
-                            DropdownOption.Option.Title.TextTransparency = 1
-                        end
-                    end
-                end
-            
-                local Success, Response = pcall(function()
-                    DropdownSettings.Callback(NewOption)
-                end)
-                if not Success then
-                    TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                    TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    Dropdown.Title.Text = "Callback Error"
-                    print("ArrayField | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
-                    wait(0.5)
-                    Dropdown.Title.Text = DropdownSettings.Name
-                    TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                end
-            end
-            
-            function DropdownSettings:Error(text)
-                Error(text)
-            end
-            
-            function DropdownSettings:Refresh(NewOptions,Selecteds)
-                DropdownSettings.Items = {}
-                DropdownSettings.Items.Selected = {}
-                for _, option in ipairs(Dropdown.List:GetChildren()) do
-                    if option.ClassName == "Frame" and option ~= SearchBar and option.Name ~= "Placeholder" then
-                        option:Destroy()
-                    end
-                end
-                AddOptions(NewOptions,Selecteds)
-            end
-            
-            function DropdownSettings:Remove(Item)
-                if Item.Name ~= "Placeholder" and Item ~= SearchBar then
-                    if DropdownSettings.Items[Item] then
-                        DropdownSettings.Items[Item].Option:Destroy()
-                        table.remove(DropdownSettings.Items,table.find(DropdownSettings.Items,Item))
-                    else
-                        Error('Option not found.')
-                    end
-                else
-                    SearchBar:Destroy()
-                    Error("why you trynna remove the searchbar? FINE")
-                end
-                if Dropdown.Selected.Text == Item then
-                    Dropdown.Selected.Text = ''
-                end
-            end
-
+			function DropdownSettings:Set(NewOption)
+				if typeof(NewOption) == 'table' then
+					DropdownSettings.Items.Selected = {}
+					for _, option in pairs(NewOption) do
+						if DropdownSettings.Items[option] then
+							local DropdownOption = DropdownSettings.Items[option]
+							DropdownOption.Selected = true
+							table.insert(DropdownSettings.Items.Selected, DropdownOption)
+							
+							DropdownOption.Option.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+					
+							if Dropdown.Visible then
+								DropdownOption.Option.BackgroundTransparency = 0
+								DropdownOption.Option.UIStroke.Transparency = 0
+								DropdownOption.Option.Title.TextTransparency = 0
+							else
+								DropdownOption.Option.BackgroundTransparency = 1
+								DropdownOption.Option.UIStroke.Transparency = 1
+								DropdownOption.Option.Title.TextTransparency = 1
+							end
+						end
+					end
+				else
+					DropdownSettings.Items.Selected = {NewOption}
+					if DropdownSettings.Items[NewOption] then
+						local DropdownOption = DropdownSettings.Items[NewOption]
+						DropdownOption.Selected = true
+						
+						DropdownOption.Option.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+					
+						if Dropdown.Visible then
+							DropdownOption.Option.BackgroundTransparency = 0
+							DropdownOption.Option.UIStroke.Transparency = 0
+							DropdownOption.Option.Title.TextTransparency = 0
+						else
+							DropdownOption.Option.BackgroundTransparency = 1
+							DropdownOption.Option.UIStroke.Transparency = 1
+							DropdownOption.Option.Title.TextTransparency = 1
+						end
+					end
+				end
+			
+				local Success, Response = pcall(function()
+					DropdownSettings.Callback({NewOption})  -- Wrap single option in table
+				end)
+				if not Success then
+					TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
+					TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+					Dropdown.Title.Text = "Callback Error"
+					print("ArrayField | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
+					wait(0.5)
+					Dropdown.Title.Text = DropdownSettings.Name
+					TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+					TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+				end
+			end
+			
+			function DropdownSettings:Error(text)
+				Error(text)
+			end
+			
+			function DropdownSettings:Refresh(NewOptions,Selecteds)
+				DropdownSettings.Items = {}
+				DropdownSettings.Items.Selected = {}
+				for _, option in ipairs(Dropdown.List:GetChildren()) do
+					if option.ClassName == "Frame" and option ~= SearchBar and option.Name ~= "Placeholder" then
+						option:Destroy()
+					end
+				end
+				AddOptions(NewOptions,Selecteds)
+			end
+			
+			function DropdownSettings:Remove(Item)
+				if Item.Name ~= "Placeholder" and Item ~= SearchBar then
+					if DropdownSettings.Items[Item] then
+						DropdownSettings.Items[Item].Option:Destroy()
+						table.remove(DropdownSettings.Items,table.find(DropdownSettings.Items,Item))
+					else
+						Error('Option not found.')
+					end
+				else
+					SearchBar:Destroy()
+					Error("why you trynna remove the searchbar? FINE")
+				end
+				if Dropdown.Selected.Text == Item then
+					Dropdown.Selected.Text = ''
+				end
+			end
+			
 			function DropdownSettings:Destroy()
 				Dropdown:Destroy()
 			end
